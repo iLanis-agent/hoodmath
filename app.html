@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HoodMath - honest range hood math</title>
+<style>
+  :root { --bg:#14171a; --card:#1c2126; --ink:#edf0f3; --dim:#9fa9b2; --acc:#c9935f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding:28px 24px 8px; max-width:980px; margin:0 auto; display:flex; justify-content:space-between; align-items:baseline; }
+  h1 { margin:0; font-size:28px; }
+  h1 span { color:var(--acc); }
+  nav a { color:var(--dim); text-decoration:none; font-size:14px; }
+  main { max-width:980px; margin:0 auto; padding:16px 24px 60px; display:grid; gap:18px; }
+  .card { background:var(--card); border-radius:14px; padding:20px; }
+  .card h2 { margin:0 0 12px; font-size:13px; letter-spacing:1.5px; color:var(--dim); text-transform:uppercase; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; }
+  label { display:block; font-size:13px; color:var(--dim); margin-bottom:4px; }
+  input, select { width:100%; background:#171c20; border:1px solid #454f58; color:var(--ink); border-radius:8px; padding:9px 10px; font-size:15px; }
+  .hint { font-size:12.5px; color:var(--dim); margin-top:10px; }
+  button { cursor:pointer; border:0; border-radius:9px; padding:11px 16px; font-size:15px; background:var(--acc); color:#2a1c0c; font-weight:600; }
+  button.ghost { background:#39424b; color:var(--ink); font-weight:500; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+  .verdict { font-size:17px; line-height:1.65; }
+  .verdict b { color:var(--acc); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-top:16px; }
+  .stat { background:#171c20; border-radius:10px; padding:12px; }
+  .stat .v { font-size:19px; font-weight:700; color:var(--acc); }
+  .stat .k { font-size:12px; color:var(--dim); margin-top:2px; }
+  .warn { background:#33281c; border:1px solid #6e573a; border-radius:10px; padding:12px 14px; margin-top:14px; font-size:14px; color:#f0dcc2; }
+  table.bd { width:100%; border-collapse:collapse; margin-top:6px; font-size:14.5px; }
+  table.bd td { padding:7px 4px; border-bottom:1px solid #313a42; }
+  table.bd td:last-child { text-align:right; color:var(--acc); font-weight:600; }
+  .fine { font-size:12.5px; color:var(--dim); margin-top:8px; }
+  a { color:var(--acc); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Hood<span>Math</span></h1>
+  <nav><a href="index.html">about</a></nav>
+</header>
+<main>
+  <section class="card">
+    <h2>The cooktop</h2>
+    <div class="grid">
+      <div>
+        <label for="cooktop">Cooktop type</label>
+        <select id="cooktop">
+          <option value="gas" selected>Gas</option>
+          <option value="electric">Electric (coil/smooth)</option>
+          <option value="induction">Induction</option>
+        </select>
+      </div>
+      <div id="btuwrap">
+        <label for="btu">Total burner BTU</label>
+        <input id="btu" type="number" min="10000" max="200000" step="1000" value="60000">
+      </div>
+      <div>
+        <label for="width">Cooktop width (in)</label>
+        <select id="width">
+          <option value="24">24 in</option>
+          <option value="30" selected>30 in</option>
+          <option value="36">36 in</option>
+          <option value="48">48 in</option>
+        </select>
+      </div>
+      <div>
+        <label for="mount">Hood mount</label>
+        <select id="mount">
+          <option value="wall" selected>Wall / under-cabinet</option>
+          <option value="island">Island (no wall)</option>
+        </select>
+      </div>
+    </div>
+    <p class="hint">BTU is on the range spec sheet - add every burner at full power. Gas is sized by heat (BTU / 100), electric and induction by width (100 CFM per linear foot). Islands get 50% more because cross-drafts own the plume.</p>
+  </section>
+
+  <section class="card">
+    <h2>The duct run</h2>
+    <div class="grid">
+      <div>
+        <label for="run">Duct run (ft)</label>
+        <input id="run" type="number" min="0" max="80" step="1" value="8">
+      </div>
+      <div>
+        <label for="elbows">90-degree elbows</label>
+        <input id="elbows" type="number" min="0" max="8" step="1" value="2">
+      </div>
+      <div>
+        <label for="cap">Termination</label>
+        <select id="cap">
+          <option value="yes" selected>Roof or wall cap</option>
+          <option value="no">Straight out the wall</option>
+        </select>
+      </div>
+      <div>
+        <label for="hoodprice">Hood price ($)</label>
+        <input id="hoodprice" type="number" min="0" max="5000" step="10" value="650">
+      </div>
+      <div>
+        <label for="ductprice">Duct $ per ft</label>
+        <input id="ductprice" type="number" min="0" max="50" step="1" value="12">
+      </div>
+    </div>
+    <div class="row">
+      <button id="go">Do the math</button>
+      <button class="ghost" data-preset="apartment">Apartment electric</button>
+      <button class="ghost" data-preset="family">Family gas range</button>
+      <button class="ghost" data-preset="island">Island pro range</button>
+    </div>
+    <p class="hint">Every elbow counts as 25 ft of duct, a cap as 15. Rigid metal only - flexible duct and its crushed cousin behind the stove are where CFM ratings go to die.</p>
+  </section>
+
+  <section class="card" id="out" hidden>
+    <h2>Your spec</h2>
+    <div class="verdict" id="verdict"></div>
+    <div class="stats" id="stats"></div>
+    <div id="warnbox"></div>
+    <table class="bd" id="breakdown"></table>
+    <p class="fine">Sizing only. Local code, the hood manufacturer's minimums, and a real installer outrank any web page. Downdrafts and recirculating "ductless" hoods are a different appliance with different (lower) expectations.</p>
+  </section>
+
+  <section class="card">
+    <h2>What the listing will not mention</h2>
+    <table class="bd">
+      <tr><td>The CFM on the box is in free air</td><td>no duct attached, no elbows, no cap - a long real-world run can cost a third of the rated pull</td></tr>
+      <tr><td>400 CFM is a legal line, not a feature</td><td>at or above it, most codes require makeup air - a ducted path for replacement air, or your house depressurizes and backdrafts the water heater</td></tr>
+      <tr><td>Sones matter more than CFM past 300</td><td>a hood too loud to use is a 0 CFM hood; check the sone rating at the speed you will actually run</td></tr>
+      <tr><td>Capture area beats power</td><td>a hood 3 in wider than the cooktop on each side at 450 CFM outperforms a narrow 900 CFM unit for everyday cooking</td></tr>
+      <tr><td>Duct size is not a suggestion</td><td>600 CFM through a 6 in duct sounds like a jet and moves like a fan; match the duct to the math</td></tr>
+      <tr><td>Mount height is part of the spec</td><td>24-30 in above the cooktop; every inch higher trades capture for headroom</td></tr>
+    </table>
+  </section>
+</main>
+<script src="engine.js"></script>
+<script>
+(function () {
+  function val(id) { return document.getElementById(id).value; }
+  function num(id) { return parseFloat(val(id)) || 0; }
+  function money(x) { return '$' + x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fmt(x) { return x.toLocaleString('en-US', { maximumFractionDigits: 1 }); }
+
+  function render() {
+    var gas = val('cooktop') === 'gas';
+    document.getElementById('btuwrap').style.display = gas ? '' : 'none';
+    var p = HoodMath.plan({
+      cooktop: val('cooktop'), btu: num('btu'), widthIn: num('width'), mount: val('mount'),
+      ductRunFt: num('run'), elbows: num('elbows'), roofCap: val('cap') === 'yes',
+      hoodPrice: num('hoodprice'), ductPricePerFt: num('ductprice')
+    });
+    if (!(p.cfm > 0)) { document.getElementById('out').hidden = true; return; }
+
+    document.getElementById('verdict').innerHTML =
+      'You need a <b>' + p.cfm + ' CFM</b> hood on a <b>' + p.ductIn + ' in</b> rigid duct (' +
+      fmt(p.equivFt) + ' ft equivalent run). Project total <b>' + money(p.totalCost) + '</b>.';
+
+    var stats = [
+      ['Hood size', p.cfm + ' CFM'],
+      ['Base need', fmt(p.baseCfm) + ' CFM'],
+      ['Duct', p.ductIn + ' in rigid'],
+      ['Equivalent run', fmt(p.equivFt) + ' ft'],
+      ['Makeup air', p.makeupAir ? 'required' : 'not required'],
+      ['Project total', money(p.totalCost)]
+    ];
+    document.getElementById('stats').innerHTML = stats.map(function (s) {
+      return '<div class="stat"><div class="v">' + s[1] + '</div><div class="k">' + s[0] + '</div></div>';
+    }).join('');
+
+    var warns = [];
+    if (p.makeupAir)
+      warns.push('<b>' + p.cfm + ' CFM crosses the 400 CFM makeup-air line.</b> Code in most areas requires a ducted makeup-air path at this size - without it the house depressurizes and can backdraft combustion appliances. Budget for it now, not at inspection.');
+    if (p.ductBumped)
+      warns.push('Your ' + fmt(p.equivFt) + ' ft equivalent run is long, so the duct bumps to <b>' + p.ductIn + ' in</b>. Shortening the run or removing an elbow is worth more than any CFM upgrade.');
+    if (p.islandMult > 1)
+      warns.push('Island hoods fight cross-drafts with no wall - that is the +50%. Go wider than the cooktop if you can; capture area is the island cheat code.');
+    document.getElementById('warnbox').innerHTML = warns.map(function (w) {
+      return '<div class="warn">' + w + '</div>';
+    }).join('');
+
+    var rows = [['Hood unit', money(p.hoodCost)],
+                ['Duct (' + fmt(num('run')) + ' ft of ' + p.ductIn + ' in rigid)', money(p.ductCost)],
+                ['Project total', money(p.totalCost)]];
+    document.getElementById('breakdown').innerHTML = rows.map(function (r) {
+      return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
+    }).join('');
+    document.getElementById('out').hidden = false;
+  }
+
+  var presets = {
+    apartment: { cooktop: 'electric', btu: 60000, width: 24, mount: 'wall', run: 3, elbows: 0, cap: 'no', hoodprice: 220, ductprice: 12 },
+    family: { cooktop: 'gas', btu: 60000, width: 30, mount: 'wall', run: 8, elbows: 2, cap: 'yes', hoodprice: 650, ductprice: 12 },
+    island: { cooktop: 'gas', btu: 90000, width: 36, mount: 'island', run: 12, elbows: 2, cap: 'yes', hoodprice: 1400, ductprice: 15 }
+  };
+  function loadPreset(key) {
+    var pr = presets[key];
+    ['cooktop', 'btu', 'width', 'mount', 'run', 'elbows', 'cap', 'hoodprice', 'ductprice'].forEach(function (id) {
+      document.getElementById(id).value = pr[id];
+    });
+    render();
+  }
+
+  document.getElementById('go').addEventListener('click', render);
+  document.querySelectorAll('[data-preset]').forEach(function (b) {
+    b.addEventListener('click', function () { loadPreset(b.getAttribute('data-preset')); });
+  });
+  ['cooktop', 'btu', 'width', 'mount', 'run', 'elbows', 'cap', 'hoodprice', 'ductprice'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', render);
+  });
+
+  loadPreset('family');
+})();
+</script>
+</body>
+</html>
