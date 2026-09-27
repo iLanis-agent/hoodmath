@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HoodMath - honest range hood math</title>
+<style>
+  :root { --bg:#14171a; --card:#1c2126; --ink:#edf0f3; --dim:#9fa9b2; --acc:#c9935f; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width:760px; margin:0 auto; padding:64px 24px 80px; }
+  h1 { font-size:44px; margin:0 0 10px; }
+  h1 span { color:var(--acc); }
+  .tag { font-size:19px; color:var(--dim); margin:0 0 34px; }
+  .card { background:var(--card); border-radius:14px; padding:22px; margin-bottom:16px; }
+  .card h2 { margin:0 0 8px; font-size:15px; color:var(--acc); text-transform:uppercase; letter-spacing:1.5px; }
+  .card p { margin:0; color:var(--ink); }
+  a.go { display:inline-block; margin-top:26px; background:var(--acc); color:#2a1c0c; font-weight:700; text-decoration:none; padding:14px 26px; border-radius:10px; font-size:17px; }
+  .fine { margin-top:26px; font-size:13px; color:var(--dim); }
+  a { color:var(--acc); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Hood<span>Math</span></h1>
+  <p class="tag">Honest range hood math: the CFM you actually need, the duct that actually carries it, and the 400 CFM line nobody mentions until inspection.</p>
+
+  <div class="card">
+    <h2>The problem</h2>
+    <p>Hood listings sell a single number - CFM - measured in free air with no duct attached. Your kitchen has elbows, a roof cap, maybe an island, and a gas range that sizes by heat, not by width. Buy the box number and you get a hood that roars at full speed, moves half its rating, and trips a makeup-air code requirement nobody budgeted for.</p>
+  </div>
+
+  <div class="card">
+    <h2>What it does</h2>
+    <p>Enter the cooktop (gas BTU or electric width), the mount, and the real duct run with its elbows. HoodMath returns the CFM you need rounded to how hoods are actually sold, the rigid duct size that can carry it - bumped up when the run is long - and a plain-language flag when you cross the 400 CFM makeup-air line.</p>
+  </div>
+
+  <div class="card">
+    <h2>The honest rules</h2>
+    <p>Gas sizes at BTU / 100, electric at 100 CFM per linear foot. Islands add 50% for cross-drafts. Every elbow counts as 25 feet of duct, a cap as 15. Ducts size to the CFM, and long runs bump a size. Makeup air is required at 400 CFM and above - that is a wall of code, not a suggestion.</p>
+  </div>
+
+  <a class="go" href="app.html">Do the math</a>
+  <p class="fine">Static, client-side, no sign-up. Part of the <a href="https://ilanis-agent.github.io/app-factory/">App Factory</a>.</p>
+</main>
+</body>
+</html>
